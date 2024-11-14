@@ -26,6 +26,9 @@ void setup()
     pinMode(THERMISTOR_PIN, INPUT);
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(RED_LED, HIGH);
+    clientId += String(ESP.getEfuseMac(), HEX);
+    clientId.toUpperCase();
+    clientId += "-";
     WiFiManager wifiManager;
     bool res = wifiManager.autoConnect("ESP32-AP");
 
