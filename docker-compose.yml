@@ -38,7 +38,7 @@ services:
       - nw_back
       - nw_mqtt
     depends_on:
-      - serviceName: mysql
+      - serviceName: "mysql"
         condition: service_healthy
 
   frontend:
@@ -50,7 +50,7 @@ services:
     networks:
       - nw_back
     depends_on:
-      - serviceName: backend
+      - serviceName: "backend"
         condition: service_healthy
 
 networks:
