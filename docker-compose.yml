@@ -1,0 +1,60 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto_broker
+    ports:
+      - "1884:1883"
+      - "9002:9001"
+    volumes:
+      - ./mqttbroker/config:/mosquitto/config
+      - ./mqttbroker/data:/mosquitto/data
+      - ./mqttbroker/log:/mosquitto/log
+    networks:
+      - nw_mqtt
+
+  mysql:
+    build:
+      context: ./iot-database
+      dockerfile: Dockerfile
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: iotdb
+      MYSQL_USER: iot
+      MYSQL_PASSWORD: iot123
+    volumes:
+      - ./iot-database/data:/var/lib/mysql
+    networks:
+        - nw_back
+
+  backend:
+    build:
+      context: ./iot-backend
+      dockerfile: Dockerfile
+    ports:
+      - "6969:8080"
+    networks:
+      - nw_back
+      - nw_mqtt
+    depends_on:
+      - serviceName: mysql
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./iot-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3000"
+    networks:
+      - nw_back
+    depends_on:
+      - serviceName: backend
+        condition: service_healthy
+
+networks:
+  nw_mqtt:
+    driver: bridge
+  nw_back:
+    driver: bridge
