@@ -37,9 +37,6 @@ services:
     networks:
       - nw_back
       - nw_mqtt
-    depends_on:
-      - serviceName: "mysql"
-        condition: service_healthy
 
   frontend:
     build:
@@ -49,9 +46,6 @@ services:
       - "3003:3000"
     networks:
       - nw_back
-    depends_on:
-      - serviceName: "backend"
-        condition: service_healthy
 
 networks:
   nw_mqtt:
