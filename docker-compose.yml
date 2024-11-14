@@ -33,7 +33,7 @@ services:
       context: ./iot-backend
       dockerfile: Dockerfile
     ports:
-      - "6969:8080"
+      - "6969:3000"
     networks:
       - nw_back
       - nw_mqtt
