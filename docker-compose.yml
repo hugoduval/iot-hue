@@ -59,11 +59,15 @@ services:
       - nw_back
 
   runner:
-    image: python:3.15
-    container_name: runner
-    volumes:
-      - ./iot-runner:/app
-    command: ["python", "/app/main.py"]
+    build:
+      context: ./iot-runner
+      dockerfile: Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+        restart: true
+      mosquitto:
+        condition: service_started
     networks:
       - nw_back
       - nw_mqtt
