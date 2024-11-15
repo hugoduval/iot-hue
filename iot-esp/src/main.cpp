@@ -26,8 +26,6 @@ void setup()
     pinMode(THERMISTOR_PIN, INPUT);
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(RED_LED, HIGH);
-    clientId += String(ESP.getEfuseMac(), HEX);
-    clientId.toUpperCase();
     clientId += "-";
     WiFiManager wifiManager;
     bool res = wifiManager.autoConnect("ESP32-AP");
@@ -45,6 +43,7 @@ void setup()
     digitalWrite(GREEN_LED, LOW);
     digitalWrite(RED_LED, LOW);
     digitalWrite(GREEN_LED, HIGH);
+    Serial.println("[CLIENTID] " + clientId);
 
     // MQTT broker config
     mqttClient.setServer(mqtt_server, 1884);
@@ -74,13 +73,11 @@ void updateMqttStatus(int lightValue, int temp)
     {
         reconnectMQTT();
     }
+    String values = String(lightValue) + " " + String(temp);
+    String topic = "esp32/" + clientId + "/status";
     char topic[50];
-    sprintf(topic, "esp32/light");
     char payload[50];
-    sprintf(payload, "%d", lightValue);
-    mqttClient.publish(topic, payload);
-    sprintf(topic, "esp32/temp");
-    sprintf(payload, "%d", temp);
+    values.toCharArray(payload, 50);
     mqttClient.publish(topic, payload);
 }
 
