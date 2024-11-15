@@ -1,7 +1,7 @@
 services:
   mosquitto:
     image: eclipse-mosquitto:latest
-    container_name: mosquitto_broker
+    container_name: mqttbroker
     ports:
       - "1884:1883"
       - "9002:9001"
