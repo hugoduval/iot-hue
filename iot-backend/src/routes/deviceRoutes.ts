@@ -35,7 +35,7 @@ router.post('/associate', authenticate, (req: Request, res: Response) => {
     const { device_mac, device_name, userId } = req.body;
 
     // Call associateDevice with the extracted userId
-    associateDevice(device_mac, device_name, userId, res);
+    associateDevice(device_name, userId, res);
 });
 
 export default router;
