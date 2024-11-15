@@ -26,7 +26,6 @@ void setup()
     pinMode(THERMISTOR_PIN, INPUT);
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(RED_LED, HIGH);
-    clientId += "-";
     WiFiManager wifiManager;
     bool res = wifiManager.autoConnect("ESP32-AP");
 
@@ -74,9 +73,10 @@ void updateMqttStatus(int lightValue, int temp)
         reconnectMQTT();
     }
     String values = String(lightValue) + " " + String(temp) + " " + clientId;
-    String topic = "esp32/status";
+    String strTopic = "esp32/status";
     char topic[50];
     char payload[50];
+    strTopic.toCharArray(topic, 50);
     values.toCharArray(payload, 50);
     mqttClient.publish(topic, payload);
 }
