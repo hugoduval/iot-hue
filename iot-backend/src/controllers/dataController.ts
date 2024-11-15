@@ -8,7 +8,7 @@ export const getLatestData = (req: Request, res: Response, next: NextFunction): 
 
   // Validate deviceId
   if (!device_name || typeof device_name !== 'string') {
-    res.status(400).send({ error: 'Invalid or missing deviceId' });
+    res.status(400).send({ error: 'Invalid or missing device_name' });
     return;
   }
 
