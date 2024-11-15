@@ -2,44 +2,49 @@ import { Request, Response } from 'express';
 import { db } from '../config';
 import mqtt from 'mqtt';
 
-// MQTT broker configuration
-const MQTT_BROKER_URL = "http://89.58.12.151";
-const MQTT_PORT = 1884;
-const MQTT_CLIENT_ID = `iot-backend-${Math.random().toString(16).slice(2)}`;
+    // MQTT broker configuration
+    const MQTT_BROKER_URL = "mqtt://89.58.12.151";
+    const MQTT_PORT = 1884;
+    const MQTT_CLIENT_ID = `iot-backend-${Math.random().toString(16).slice(2)}`;
 
-// Create an MQTT client
-const client = mqtt.connect(MQTT_BROKER_URL, {
-    port: MQTT_PORT,
-    clientId: MQTT_CLIENT_ID
-});
+    // Create an MQTT client
+    const client = mqtt.connect(MQTT_BROKER_URL, {
+        port: MQTT_PORT,
+        clientId: MQTT_CLIENT_ID,
+        clean: true,
+        keepalive: 60,
+    });
 
-// Handle MQTT client events
-client.on('connect', () => {
-    console.log('Connected to MQTT broker');
-});
+    // Handle MQTT client events
+    client.on('connect', () => {
+        console.log('Connected to MQTT broker');
+    });
 
-client.on('error', (err) => {
-    console.error('MQTT connection error:', err);
-});
+    client.on('error', (err) => {
+        console.error('MQTT connection error:', err);
+        setTimeout(() => {
+            client.reconnect();
+        }, 5000); // Try to reconnect after 5 seconds
+    })
 
-client.on('message', (topic, message) => {
-    const data = message.toString();
-    const splittedData = data.split(' ');
-    const light = splittedData[0];
-    const temperature = splittedData[1];
-    const device_id = splittedData[2];
+    client.on('message', (topic, message) => {
+        const data = message.toString();
+        const splittedData = data.split(' ');
+        const light = splittedData[0];
+        const temperature = splittedData[1];
+        const device_id = splittedData[2];
 
-    // Insert data into the database
-    db.query(
-        'INSERT INTO iot_data (device_id, temperature, light) VALUES (?, ?)',
-        [temperature, light],
-        (err) => {
-            if (err) {
-                console.error('Error inserting data into database:', err);
+        // Insert data into the database
+        db.query(
+            'INSERT INTO iot_data (device_id, temperature, light) VALUES (?, ?)',
+            [temperature, light],
+            (err) => {
+                if (err) {
+                    console.error('Error inserting data into database:', err);
+                }
             }
-        }
-    );
-});
+        );
+    });
 
 export const subscribeMqtt = (req: Request, res: Response) => {
     const { topic } = req.body;
