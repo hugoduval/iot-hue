@@ -73,7 +73,7 @@ void updateMqttStatus(int lightValue, int temp)
     {
         reconnectMQTT();
     }
-    String values = String(lightValue) + " " + String(temp);
+    String values = String(lightValue) + " " + String(temp) + " " + clientId;
     String topic = "esp32/" + clientId + "/status";
     char topic[50];
     char payload[50];

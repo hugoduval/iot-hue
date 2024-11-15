@@ -3,7 +3,7 @@ import { db } from '../config';
 import mqtt from 'mqtt';
 
 // MQTT broker configuration
-const MQTT_BROKER_URL = "89.58.12.151"; // Replace with your MQTT broker URL
+const MQTT_BROKER_URL = "http://89.58.12.151";
 const MQTT_PORT = 1884;
 const MQTT_CLIENT_ID = `iot-backend-${Math.random().toString(16).slice(2)}`;
 
@@ -27,10 +27,11 @@ client.on('message', (topic, message) => {
     const splittedData = data.split(' ');
     const light = splittedData[0];
     const temperature = splittedData[1];
+    const device_id = splittedData[2];
 
     // Insert data into the database
     db.query(
-        'INSERT INTO iot_data (temperature, light) VALUES (?, ?)',
+        'INSERT INTO iot_data (device_id, temperature, light) VALUES (?, ?)',
         [temperature, light],
         (err) => {
             if (err) {
