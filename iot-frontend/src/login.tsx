@@ -29,12 +29,35 @@ const LoginPage: React.FC = () => {
     console.log("Form submitted: ", formData);
     setError("");
 
-    // TODO: Remplacer par une requête HTTP réelle
-    // Simuler une requête HTTP
-    setTimeout(() => {
-      login();
-      navigate("/home");
-    }, 1000);
+    const body = "{\"username\":\"" + formData.username + "\",\"password\":\"" + formData.password + "\"}";
+    fetch("http://89.58.12.151:6969/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: body,
+    })
+      .then((response) => {
+        console.log("response: " + response);
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Erreur lors de la connexion.");
+        }
+      })
+      .then((data) => {
+        console.log("data: " + data);
+        if (data.token) {
+          login();
+          localStorage.setItem("token", data.token);
+          navigate("/home");
+        } else {
+          throw new Error("Erreur lors de l'enregistrement.");
+        }
+      })
+      .catch((error) => {
+        setError("Erreur lors de l'enregistrement.");
+      });
   };
 
   return (

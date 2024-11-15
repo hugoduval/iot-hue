@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthContext";
 
 function RegistrationPage() {
-    const { login } = useAuth();
     const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -29,12 +27,29 @@ function RegistrationPage() {
     console.log("Form submitted: ", formData);
     setError("");
 
-    // TODO: Remplacer par une requête HTTP réelle
-    // Simuler une requête HTTP
-    setTimeout(() => {
-        login();
-        navigate("/home");
-      }, 1000);
+    const body = "{\"username\":\"" + formData.username + "\",\"password\":\"" + formData.password + "\"}";
+    fetch("http://89.58.12.151:6969/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: body,
+    })
+      .then((response) => {
+        console.log("response: " + response);
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Erreur lors de l'enregistrement.");
+        }
+      })
+      .then((data) => {
+        console.log("data: " + data);
+        navigate("/");
+      })
+      .catch((error) => {
+        setError("Erreur lors de l'enregistrement.");
+      });
   };
 
   return (
