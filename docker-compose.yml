@@ -58,6 +58,16 @@ services:
     networks:
       - nw_back
 
+  runner:
+    image: python:3.15
+    container_name: runner
+    volumes:
+      - ./iot-runner:/app
+    command: ["python", "/app/main.py"]
+    networks:
+      - nw_back
+      - nw_mqtt
+
 networks:
   nw_mqtt:
     driver: bridge

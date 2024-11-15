@@ -22,9 +22,9 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- Table: iot-database/iot_data
 CREATE TABLE IF NOT EXISTS `iot_data` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `device_id` int(11) NOT NULL,
-  `temperature` int(11) NOT NULL,
-  `light` int(11) NOT NULL,
+  `device_id` varchar(255) NOT NULL,
+  `temperature` varchar(255) NOT NULL,
+  `light` varchar(255) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
