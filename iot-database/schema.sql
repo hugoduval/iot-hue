@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- Table: iot-database/iot_data
 CREATE TABLE IF NOT EXISTS `iot_data` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `device_id` varchar(255) NOT NULL,
+  `device_name` varchar(255) NOT NULL,
   `temperature` varchar(255) NOT NULL,
   `light` varchar(255) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

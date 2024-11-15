@@ -3,15 +3,26 @@ import mysql.connector
 from mysql.connector import Error
 
 # MySQL Database configuration
-db_config = {
-    'host': 'mysql',  # Change to your database host
+db_config_lh = {
+        'host': 'localhost',  # Change to your database host
     'user': 'iot',       # Change to your database user
     'password': 'iot123',  # Change to your database password
     'database': 'iotdb'  # Change to your database name
 }
 
+db_config_docker = {
+    'host': 'mysql',  # Change to your database host
+    'user': 'iot',       # Change to your database user
+    'password': 'iot123',
+    'database': 'iotdb'  # Change to your database name
+}
+
+db_config = db_config_docker
+
 # MQTT Configuration
-MQTT_BROKER = 'mosquitto'  # Replace with your MQTT broker address
+BROKER_DOCKER = 'mosquitto'
+BROKER_LOCALHOST = 'localhost'
+MQTT_BROKER = BROKER_DOCKER  # Replace with your MQTT broker address
 MQTT_PORT = 1884
 MQTT_TOPIC = 'esp32/status'  # Replace with your desired topic
 
@@ -34,7 +45,7 @@ def write_to_database(connection, topic, message):
     cid = msg[2]
     try:
         cursor = connection.cursor()
-        query = "INSERT INTO iot_data (device_id, temperature, light) VALUES (%s, %s, %s)"
+        query = "INSERT INTO iot_data (device_name, temperature, light) VALUES (%s, %s, %s)"
         cursor.execute(query, (cid, temp, light))
         connection.commit()
         print(f"Inserted: {message} into database")

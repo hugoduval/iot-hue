@@ -4,10 +4,10 @@ import { RowDataPacket } from 'mysql2';
 
 export const getLatestData = (req: Request, res: Response, next: NextFunction): void => {
   // Extract deviceId from the query parameters
-  const { deviceId } = req.query;
+  const { device_name } = req.query;
 
   // Validate deviceId
-  if (!deviceId || typeof deviceId !== 'string') {
+  if (!device_name || typeof device_name !== 'string') {
     res.status(400).send({ error: 'Invalid or missing deviceId' });
     return;
   }
@@ -15,13 +15,13 @@ export const getLatestData = (req: Request, res: Response, next: NextFunction): 
   // SQL query to get the latest data by deviceId
   const query = `
     SELECT * FROM data
-    WHERE deviceId = ?
+    WHERE device_name = ?
     ORDER BY timestamp DESC
     LIMIT 1;
   `;
 
   // Execute the query
-  db.query(query, [deviceId], (error: any, results: RowDataPacket[]) => {
+  db.query(query, [device_name], (error: any, results: RowDataPacket[]) => {
     if (error) {
       // Log the error for debugging purposes
       console.error('Error getting data:', error);

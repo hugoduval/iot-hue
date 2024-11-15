@@ -3,7 +3,7 @@ services:
     image: eclipse-mosquitto:latest
     container_name: mqttbroker
     ports:
-      - "1884:1883"
+      - "1884:1884"
       - "9002:9001"
     volumes:
       - ./mqttbroker/config:/mosquitto/config
