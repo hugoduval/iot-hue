@@ -4,7 +4,10 @@ import { RowDataPacket } from 'mysql2';
 
 export const getLatestData = (req: Request, res: Response, next: NextFunction): void => {
   // Extract deviceId from the query parameters
-  const { device_name } = req.query;
+  var { device_name } = req.query;
+  if (!device_name) {
+    device_name = req.headers['device_name'] as string;
+  }
 
   // Validate deviceId
   if (!device_name || typeof device_name !== 'string') {
@@ -14,10 +17,10 @@ export const getLatestData = (req: Request, res: Response, next: NextFunction): 
 
   // SQL query to get the latest data by deviceId
   const query = `
-    SELECT * FROM data
+    SELECT * FROM iot_data
     WHERE device_name = ?
     ORDER BY timestamp DESC
-    LIMIT 1;
+    LIMIT 10;
   `;
 
   // Execute the query
