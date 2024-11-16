@@ -102,7 +102,6 @@ int convertToCelsius(int thermistorValue)
 void loop()
 {
     // Read the value from the button pin
-    digitalWrite(GREEN_LED, HIGH);
     int buttonState = digitalRead(RESET_PIN);
     if (buttonState == LOW)
     {
@@ -114,6 +113,8 @@ void loop()
     Serial.printf("[MAIN] Light : %d, Temp : %d\n", lightValue, celsius);
     updateMqttStatus(lightValue, celsius);
     mqttClient.loop();
-    delay(5000);
+    delay(4000);
+    digitalWrite(GREEN_LED, HIGH);
+    delay(1000);
     digitalWrite(GREEN_LED, LOW);
 }
