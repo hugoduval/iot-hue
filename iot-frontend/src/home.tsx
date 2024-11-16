@@ -45,22 +45,44 @@ const Dashboard: React.FC = () => {
   }>({ min: null, max: null, avg: null });
 
   // Plage temporelle affichée
-  const [timeRange, setTimeRange] = useState<[number, number]>([0, 19]);
+  const [timeRange, setTimeRange] = useState<[number, number]>([0, 99]);
 
   // Simulation des données en temps réel
   useEffect(() => {
     const fetchData = () => {
-      const newTemperature = 22 + Math.random() * 3; // Température entre 22 et 25°C
-      const newLuminosity = 50 + Math.random() * 50; // Luminosité entre 50% et 100%
-      const now = new Date();
-      const timestamp = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
 
-      // Met à jour les états
-      setTemperature(newTemperature);
-      setLuminosity(newLuminosity);
-      setTemperatureData((prev) => [...prev, newTemperature].slice(-20));
-      setLuminosityData((prev) => [...prev, newLuminosity].slice(-20));
-      setTimeStamps((prev) => [...prev, timestamp].slice(-20));
+      fetch("http://89.58.12.151:6969/api/data/getData", {
+        method: "GET",
+        headers: {
+          "device_name": "ESP32-Maison",
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            console.log(response);
+            throw new Error("Erreur lors de la récupération des données.");
+          }
+        })
+        .then((data) => {
+          console.log(data);
+          //Met à jour les données en temps réel
+          if (data.temperature && data.light && data.timestamp) {
+            const tmpTemperature = (data.temperature as number);
+            const luminosityPercentage = (data.light as number) / 4096 * 100; // Conversion de la valeur de luminosité en pourcentage (4096 = valeur maximale)
+            const timestampBeautified = new Date(data.timestamp).toLocaleTimeString();
+
+            setTemperature(tmpTemperature);
+            setLuminosity(luminosityPercentage);
+            setTemperatureData((prev) => [...prev, tmpTemperature].slice(-100));
+            setLuminosityData((prev) => [...prev, luminosityPercentage].slice(-100));
+            setTimeStamps((prev) => [...prev, timestampBeautified].slice(-100));
+          }
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la récupération des données.");
+        });
     };
 
     const interval = setInterval(fetchData, 2000); // Mise à jour toutes les 2 secondes
@@ -74,8 +96,7 @@ const Dashboard: React.FC = () => {
         min: Math.min(...temperatureData),
         max: Math.max(...temperatureData),
         avg:
-          temperatureData.reduce((sum, val) => sum + val, 0) /
-          temperatureData.length,
+          (temperatureData.reduce((sum, val) => sum + val, 0) / temperatureData.length) || 0,
       });
     }
 
@@ -84,8 +105,7 @@ const Dashboard: React.FC = () => {
         min: Math.min(...luminosityData),
         max: Math.max(...luminosityData),
         avg:
-          luminosityData.reduce((sum, val) => sum + val, 0) /
-          luminosityData.length,
+          (luminosityData.reduce((sum, val) => sum + val, 0) / luminosityData.length) || 0,
       });
     }
   }, [temperatureData, luminosityData]);
@@ -115,19 +135,19 @@ const Dashboard: React.FC = () => {
           <div className="p-4 bg-blue-100 rounded-lg shadow">
             <h3 className="text-xl font-semibold text-blue-700">Température</h3>
             <p className="text-lg text-gray-700">
-              Actuelle : {temperature ? `${temperature.toFixed(1)} °C` : "Chargement..."}
+              Actuelle : {temperature ? `${temperature} °C` : "Chargement..."}
             </p>
             <p className="text-sm text-gray-600">
               Min : {temperatureStats.min !== null ? temperatureStats.min.toFixed(1) : "N/A"} °C | 
               Max : {temperatureStats.max !== null ? temperatureStats.max.toFixed(1) : "N/A"} °C | 
-              Moyenne : {temperatureStats.avg !== null ? temperatureStats.avg.toFixed(1) : "N/A"} °C
+              Moyenne : {temperatureStats.avg !== null ? temperature : "N/A"} °C
             </p>
           </div>
 
           <div className="p-4 bg-yellow-100 rounded-lg shadow">
             <h3 className="text-xl font-semibold text-yellow-700">Luminosité</h3>
             <p className="text-lg text-gray-700">
-              Actuelle : {luminosity ? `${luminosity.toFixed(1)} %` : "Chargement..."}
+              Actuelle : {luminosity ? `${luminosity} %` : "Chargement..."}
             </p>
             <p className="text-sm text-gray-600">
               Min : {luminosityStats.min !== null ? luminosityStats.min.toFixed(1) : "N/A"} % | 
